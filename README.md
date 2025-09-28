@@ -18,7 +18,7 @@ O menu inicial permite iniciar a partida, desligar a música ou sair do jogo.
 
 Menu inicial interativo com botões funcionais.
 
-Animações de idle e caminhada para o herói.
+Animações de idle e caminhada para o player.
 
 Classes organizadas para Player, Plataforma, Inimigo, Coração e Portal.
 
