@@ -48,4 +48,4 @@ PGZero
 
 Python 3.11+
 
-Biblioteca pygame.Rect para sistema de colisõesv
+Biblioteca pygame.Rect para sistema de colisões
