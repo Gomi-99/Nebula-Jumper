@@ -72,18 +72,26 @@ class Player:
                     self.vertical_speed = 0
                     self.on_ground = True
 
-    
     def move(self):
         moving = False
+        
+        # Movimento para direita
         if keyboard.right:
             self.actor.x += MOVE_SPEED
-            self.facing_right = True
-            moving = True
-        elif keyboard.left:
-            self.actor.x -= MOVE_SPEED
-            self.facing_right = False
+            if not self.facing_right:  # Só muda se não estiver já virado para direita
+                self.facing_right = True
+                self.actor.flip_x = not self.facing_right
             moving = True
             
+        # Movimento para esquerda
+        elif keyboard.left:
+            self.actor.x -= MOVE_SPEED
+            if self.facing_right:  # Só muda se não estiver já virado para esquerda
+                self.facing_right = False
+                self.actor.flip_x = not self.facing_right
+            moving = True
+            
+        # Pulo
         if (keyboard.up or keyboard.w) and self.on_ground:
             jump_sound.play()
             self.vertical_speed = JUMP_STRENGTH
@@ -104,6 +112,7 @@ class Player:
                 self.anim_index %= len(self.walk_images)
                 self.actor.image = self.walk_images[self.anim_index]
 
+        # Aplica o flip baseado na direção
         self.actor.flip_x = not self.facing_right
 
     def update(self):
@@ -120,11 +129,12 @@ class Enemy:
         self.walk_images = walk_images
         self.actor = Actor(self.idle_images[0], pos=position)
         self.velocity = velocity
-        self.direction = 1  
+        self.direction = 1  # 1 para direita, -1 para esquerda
         self.vertical_speed = 0
         self.animation_index = 0
         self.animation_timer = 0
         self.on_ground = False
+        self.facing_right = True  # Adiciona controle de direção visual
 
     def apply_gravity(self):
         self.vertical_speed += GRAVITY
@@ -135,7 +145,7 @@ class Enemy:
 
         # Colisão com o chão
         if self.actor.y + 20 >= GROUND_RECT.top:
-            self.actor.y = GROUND_RECT.top- 20 
+            self.actor.y = GROUND_RECT.top - 20 
             self.vertical_speed = 0
             self.on_ground = True
 
@@ -149,19 +159,32 @@ class Enemy:
 
     def move(self):
         self.actor.x += self.velocity * self.direction
+        
+        # Atualiza a direção visual baseada no movimento
+        self.facing_right = self.direction > 0
 
+        # Verifica limites da tela
         if self.actor.left <= 0 or self.actor.right >= WIDTH:
             self.direction *= -1
+            self.facing_right = self.direction > 0
 
+        # Verifica se está no limite da plataforma
         below = Rect((self.actor.x, self.actor.y + 21), (1, 1))
         on_platform = False
-        for platform in PLATFORMS:
-            if platform.colliderect(below):
-                on_platform = True
-                break
+        
+        # Verifica se ainda está sobre uma plataforma ou o chão
+        if self.actor.y + 20 >= GROUND_RECT.top - 5:  # Próximo ao chão
+            on_platform = True
+        else:
+            for platform in PLATFORMS:
+                if platform.colliderect(below):
+                    on_platform = True
+                    break
 
+        # Se não está mais sobre uma plataforma, inverte direção
         if not on_platform:
             self.direction *= -1
+            self.facing_right = self.direction > 0
 
     def animation(self):
         self.animation_timer += 1
@@ -172,7 +195,9 @@ class Enemy:
             self.animation_index %= len(self.walk_images)
             self.actor.image = self.walk_images[self.animation_index]
 
-        self.actor.flip_x = self.direction < 0
+        # Aplica o flip baseado na direção de movimento
+        # facing_right = True significa sprite original, False = flipado
+        self.actor.flip_x = not self.facing_right
 
     def update(self):
         self.apply_gravity()
@@ -320,6 +345,7 @@ def reset_game():
     global lives, hero, enemies
     lives = NUM_LIVES
     hero.actor.pos = (100, 500)
+    hero.facing_right = True  # Reset da direção do player
 
     # Recria inimigos para resetar posição e estado
     enemies.clear()
