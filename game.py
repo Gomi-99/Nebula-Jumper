@@ -8,9 +8,9 @@ game_started = False
 show_menu = True
 music_on = True
 end_time = None
-click_sound = sounds.select
-jump_sound = sounds.jump_high
-hit_sound = sounds.hurt
+selecting = sounds.select
+jumping = sounds.jump_high
+damage = sounds.hurt
 
 # Musica de fundo
 if music_on:
@@ -19,9 +19,9 @@ if music_on:
 # Configurações do jogo
 WIDTH = 800
 HEIGHT = 600
-GRAVITY = 0.5
+GVT = 0.5
 JUMP_STRENGTH = -11
-MOVE_SPEED = 3
+MOVE_SPD = 3
 TITLE = "Nebula Jumper"
 
 # Define o chão e plataformas
@@ -55,7 +55,7 @@ class Player:
         self.anim_timer = 0
 
     def apply_gravity(self):
-        self.vertical_speed += GRAVITY
+        self.vertical_speed += GVT
         self.actor.y += self.vertical_speed
         player_rect = Rect((self.actor.left, self.actor.top), self.actor.size)
 
@@ -77,16 +77,16 @@ class Player:
         moving = False
         
         # Movimento para direita
-        if keyboard.right:
-            self.actor.x += MOVE_SPEED
+        if keyboard.right or keyboard.d:
+            self.actor.x += MOVE_SPD
             if not self.facing_right:  # Só muda se não estiver já virado para direita
                 self.facing_right = True
                 self.actor.flip_x = not self.facing_right
             moving = True
             
         # Movimento para esquerda
-        elif keyboard.left:
-            self.actor.x -= MOVE_SPEED
+        elif keyboard.left or keyboard.d:
+            self.actor.x -= MOVE_SPD
             if self.facing_right:  # Só muda se não estiver já virado para esquerda
                 self.facing_right = False
                 self.actor.flip_x = not self.facing_right
@@ -94,7 +94,7 @@ class Player:
             
         # Pulo
         if (keyboard.up or keyboard.w) and self.on_ground:
-            jump_sound.play()
+            jumping.play()
             self.vertical_speed = JUMP_STRENGTH
             self.on_ground = False
 
@@ -138,7 +138,7 @@ class Enemy:
         self.facing_right = True  # Adiciona controle de direção visual
 
     def apply_gravity(self):
-        self.vertical_speed += GRAVITY
+        self.vertical_speed += GVT
         self.actor.y += self.vertical_speed
         self.on_ground = False
 
@@ -258,12 +258,12 @@ def on_mouse_down(pos):
 
     if show_menu:
         if button_start.collidepoint(pos): #Start
-            click_sound.play()
+            selecting.play()
             show_menu = False
             game_started = True
 
         elif button_music.collidepoint(pos): # Music
-            click_sound.play()
+            selecting.play()
             music_on = not music_on
             if music_on:
                 sounds.time_for_adventure.play()  # Som tocando 
@@ -271,7 +271,7 @@ def on_mouse_down(pos):
                 sounds.time_for_adventure.stop() # Para de tocar o som
 
         elif button_quit.collidepoint(pos): # Exit
-            click_sound.play()
+            selecting.play()
             quit()
 
 def update():
@@ -299,7 +299,7 @@ def update():
         enemy_rect = Rect((enemy.actor.left, enemy.actor.top), enemy.actor.size)
 
         if hero_rect.colliderect(enemy_rect):
-            hit_sound.play()
+            damage.play()
             lives -= 1
             hero.actor.pos = (100, 500)
             if lives <= 0:
