@@ -22,6 +22,7 @@ HEIGHT = 600
 GRAVITY = 0.5
 JUMP_STRENGTH = -11
 MOVE_SPEED = 3
+TITLE = "Nebula Jumper"
 
 # Define o chão e plataformas
 GROUND_RECT = Rect((0, 570), (WIDTH, 50))
@@ -229,20 +230,21 @@ for platform in PLATFORMS:
 
 # Portal na última plataforma
 last_platform = PLATFORMS[-1]
-portal = Actor("portal", pos=(last_platform.centerx + 80, last_platform.top - 60))
+portal = Actor("bandeira", pos=(last_platform.centerx + 80, last_platform.top - 60))
 
 def draw_hearts():
     for i in range(lives):
         screen.blit("heart", (10 + i * 45, 10))
 
 # Botões clicáveis do menu
-button_start = Rect(300, 150, 200, 50)
-button_music = Rect(300, 250, 200, 50)
-button_quit = Rect(300, 350, 200, 50)
+button_start = Rect(300, 210, 200, 50)
+button_music = Rect(300, 340, 200, 50)
+button_quit = Rect(300, 460, 200, 50)
 
 # Menu
 def draw_menu(screen):
-    screen.blit("bg_forest", (0, 0))
+    screen.blit("bg_menu", (0, 0))
+    screen.draw.text(TITLE, center=(WIDTH//2, 100), fontsize=78, color="white")
     screen.draw.filled_rect(button_start, (45, 247, 75))
     screen.draw.filled_rect(button_music, (181, 181, 181))
     screen.draw.filled_rect(button_quit, (171, 0, 0))
