@@ -8,13 +8,13 @@ game_started = False
 show_menu = True
 music_on = True
 end_time = None
-click_sound = sounds.click
-jump_sound = sounds.jump
-hit_sound = sounds.enemy_hit
+click_sound = sounds.select
+jump_sound = sounds.jump_high
+hit_sound = sounds.hurt
 
 # Musica de fundo
 if music_on:
-    sounds.bg_music.play()
+    sounds.time_for_adventure.play()
 
 # Configurações do jogo
 WIDTH = 800
@@ -266,9 +266,9 @@ def on_mouse_down(pos):
             click_sound.play()
             music_on = not music_on
             if music_on:
-                sounds.bg_music.play()  # Som tocando 
+                sounds.time_for_adventure.play()  # Som tocando 
             else:
-                sounds.bg_music.stop() # Para de tocar o som
+                sounds.time_for_adventure.stop() # Para de tocar o som
 
         elif button_quit.collidepoint(pos): # Exit
             click_sound.play()
